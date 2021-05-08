@@ -1,0 +1,91 @@
+import RPi
+import RPi.GPIO as GPIO
+from tkinter import *
+import tkinter.font
+from gpiozero import LED
+RPi.GPIO.setmode(GPIO.BCM)
+import time
+
+LED = 18
+
+GPIO.setup(LED,GPIO.OUT)
+win = Tk()
+win.title("Morse Code Blinker")
+myFont = tkinter.font.Font(family = 'Chiller', size = 14, weight = "bold")
+
+def dash():
+    GPIO.output(LED,GPIO.HIGH)
+    time.sleep(0.60)
+    GPIO.output(LED,GPIO.LOW)
+    time.sleep(0.60)
+    
+def dot():
+    GPIO.output(LED,GPIO.HIGH)
+    time.sleep(0.20)
+    GPIO.output(LED,GPIO.LOW)
+    time.sleep(0.20)
+
+def convert():
+    word = INPUT.get()
+    if (len(word) > 13):
+        win.destroy()
+        print("You can only enter 12 characters")
+    else:
+        for letter in word:
+            for symbol in CODE[letter.upper()]:
+                if symbol == '-':
+                    dash()
+                elif symbol == '.':
+                    dot()
+                else:
+                    time.sleep(1)
+
+def close():
+    RPi.GPIO.cleanup()
+    win.destroy()
+
+
+CODE = {' ': ' ',
+'A': '.-',
+'B': '-...',
+'C': '-.-.',
+'D': '-..',
+'E': '.',
+'F': '..-.',
+'G': '--.',
+'H': '....',
+'I': '..',
+'J': '.---',
+'K': '-.-',
+'L': '.-..',
+'M': '--',
+'N': '-.',
+'O': '---',
+'P': '.--.',
+'Q': '--.-',
+'R': '.-.',
+'S': '...',
+'T': '-',
+'U': '..-',
+'V': '...-',
+'W': '.--',
+'X': '-..-',
+'Y': '-.--',
+'Z': '--..'}
+
+GUILabel = Label(win, text = 'Enter any word(MAX 12 chars)')
+GUILabel.grid(row = 0, column = 1)
+
+INPUT = Entry(win, font = myFont, width=28, bg= 'white')
+INPUT.grid(row=1, column=1)
+
+LEDButton = Button(win, text = 'BLINK MORSE', font = myFont,
+command = convert, bg = 'yellow', height = 2, width =20)
+LEDButton.grid(row=2,column=1)
+
+exitButton = Button(win, text = 'EXIT', font = myFont, command =
+close, bg = 'red', height = 1, width =10)
+exitButton.grid(row=3,column=1)
+
+win.protocol("WM_DELETE_WINDOW", close)
+win.mainloop()
